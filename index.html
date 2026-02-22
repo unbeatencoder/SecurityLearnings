@@ -119,15 +119,15 @@
         
         <!-- User Input Form Section -->
         <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px;">
-            <h3>📝 Interactive Form</h3>
+            <h3>📝 Interactive Form Vulnerable to Reflected XSS</h3>
             <p>Enter some text below and see it reflected back to you!</p>
             
-            <form id="userForm" style="margin: 20px 0;">
+            <form id="userFormVulnerableToReflectedXSS" style="margin: 20px 0;">
                 <div style="margin-bottom: 20px;">
                     <label for="userInput" style="display: block; margin-bottom: 8px; font-weight: bold; color: #495057;">Enter your message:</label>
                     <input 
                         type="text" 
-                        id="userInput" 
+                        id="userInputVulnerableToReflectedXSS" 
                         name="userInput" 
                         placeholder="Type something here..." 
                         style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px; box-sizing: border-box;"
@@ -139,12 +139,37 @@
                     📤 Submit
                 </button>
             </form>
-            
-            <div id="result" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #28a745; display: none;">
+            <div id="resultVulnerableToReflectedXSS" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #28a745; display: none;">
                 <h4>🎯 Your Input:</h4>
-                <p id="userMessage" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
+                <p id="userMessageVulnerableToReflectedXSS" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
                 <p style="color: #6c757d; font-size: 14px; margin: 0;">This demonstrates how user input can be captured and displayed!</p>
             </div>
+        </div>
+        <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px;">
+            <h3>📝 Interactive Form Safe from Reflected XSS</h3>
+            <p>Enter some text below and see it reflected back to you!</p>
+            <form id="userFormSafeFromReflectedXSS" style="margin: 20px 0;">
+                <div style="margin-bottom: 20px;">
+                    <label for="userInput" style="display: block; margin-bottom: 8px; font-weight: bold; color: #495057;">Enter your message:</label>
+                    <input 
+                        type="text" 
+                        id="userInputSafeFromReflectedXSS" 
+                        name="userInput" 
+                        placeholder="Type something here..." 
+                        style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px; box-sizing: border-box;"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    📤 Submit
+                </button>
+            </form>
+             <div id="resultSafeFromReflectedXSS" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #28a745; display: none;">
+                <h4>🎯 Your Input:</h4>
+                <p id="userMessageSafeFromReflectedXSS" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
+                <p style="color: #6c757d; font-size: 14px; margin: 0;">This demonstrates how user input can be captured and displayed!</p>
+            </div> 
         </div>
         
         <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center;">
@@ -154,21 +179,44 @@
     
     <!-- JavaScript for form handling -->
     <script>
-        document.getElementById('userForm').addEventListener('submit', function(e) {
+        document.getElementById('userFormVulnerableToReflectedXSS').addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent form from submitting normally
             
             // Get the user input
-            const userInput = document.getElementById('userInput').value;
+            const userInput = document.getElementById('userInputVulnerableToReflectedXSS').value;
             
             // Display the result
-            const resultDiv = document.getElementById('result');
-            const userMessage = document.getElementById('userMessage');
+            const resultDiv = document.getElementById('resultVulnerableToReflectedXSS');
+            const userMessage = document.getElementById('userMessageVulnerableToReflectedXSS');
             
             if (userInput.trim() !== '') {
                 // VULNERABLE: Using innerHTML instead of textContent allows XSS
                 // This is intentionally vulnerable for security learning purposes
                 //Original line was: userMessage.textContent = userInput; This was not vulnerable to XSS since only text was being displayed.
                 userMessage.innerHTML = userInput;
+                resultDiv.style.display = 'block';
+                
+                // Clear the input field
+                document.getElementById('userInput').value = '';
+                
+                // Add a nice animation effect
+                resultDiv.style.animation = 'fadeIn 0.5s ease-in';
+            }
+        });
+
+        document.getElementById('userFormSafeFromReflectedXSS').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent form from submitting normally
+            
+            // Get the user input
+            const userInput = document.getElementById('userInputSafeFromReflectedXSS').value;
+            
+            // Display the result
+            const resultDiv = document.getElementById('resultSafeFromReflectedXSS');
+            const userMessage = document.getElementById('userMessageSafeFromReflectedXSS');
+            
+            if (userInput.trim() !== '') {
+                // SAFE: Using textContent instead of innerHTML prevents XSS
+                userMessage.textContent = userInput;
                 resultDiv.style.display = 'block';
                 
                 // Clear the input field
