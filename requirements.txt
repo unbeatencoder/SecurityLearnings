@@ -1,0 +1,2 @@
+# No external dependencies required - uses Python built-in modules only
+# This server runs with Python 3.6+ standard library
