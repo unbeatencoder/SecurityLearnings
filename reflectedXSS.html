@@ -121,7 +121,10 @@
         <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px;">
             <h3>📝 Interactive Form Vulnerable to Reflected XSS</h3>
             <p>Enter some text below and see it reflected back to you!</p>
-            
+            <p>Payloads that won't work due to modern browsers' security features:</pp>
+            <p>&lt;script&gt;alert('xss')&lt;/script&gt; </p>
+            <p>Payloads that will work even in presence of modern browsers' security features:</pp>
+            <p><p>&lt;img src="invalid-image" onerror="alert('XSS%20Attack%20Successful!')"&gt;</p></p>
             <form id="userFormVulnerableToReflectedXSS" style="margin: 20px 0;">
                 <div style="margin-bottom: 20px;">
                     <label for="userInput" style="display: block; margin-bottom: 8px; font-weight: bold; color: #495057;">Enter your message:</label>
