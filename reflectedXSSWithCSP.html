@@ -118,6 +118,7 @@
             <p>&lt;script&gt;alert('xss')&lt;/script&gt; </p>
             <p>Payloads that will work even in presence of modern browsers' security features:</pp>
             <p><p>&lt;img src="invalid-image" onerror="alert('XSS%20Attack%20Successful!')"&gt;</p></p>
+            <p> Observe console.log to see CSP violations.</p>
             <form id="userFormVulnerableToReflectedXSS" style="margin: 20px 0;">
                 <div style="margin-bottom: 20px;">
                     <label for="userInput" style="display: block; margin-bottom: 8px; font-weight: bold; color: #495057;">Enter your message:</label>
