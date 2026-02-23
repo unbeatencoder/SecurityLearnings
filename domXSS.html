@@ -106,69 +106,35 @@
             <a href="/" class="btn">🏠 Home Directory</a>
             <a href="#" onclick="alert('JavaScript works too!')" class="btn">⚡ Test JavaScript</a>
         </div>
-             <h1>Welcome to our site!</h1>
-        <div id="greeting"></div>
-        <script>
-            // Vulnerable code: reading from URL fragment and injecting directly into DOM
-            const params = new URLSearchParams(window.location.search);
-            const name = params.get('name'); // e.g., ?name=John
-    
-            // Dangerous: directly inserting user-controlled data into innerHTML
-            document.getElementById('greeting').innerHTML = `Hello, ${name}!`;
-        </script>
-        
-        <!-- User Input Form Section -->
-        <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px;">
-            <h3>📝 Stored XSS Playground (One Input)</h3>
-            <p>Submit once to store payload in localStorage, then click a renderer to see safe vs unsafe behavior.</p>
-            <p>Payloads that won't work due to modern browsers' security features:</p>
-            <p>&lt;script&gt;alert('xss')&lt;/script&gt;</p>
-            <p>Payloads that can still execute with unsafe rendering:</p>
-            <p>&lt;img src="invalid-image" onerror="alert('XSS%20Attack%20Successful!')"&gt;</p>
-
-            <form id="storePayloadForm" style="margin: 20px 0;">
-                <div style="margin-bottom: 20px;">
-                    <label for="storedPayloadInput" style="display: block; margin-bottom: 8px; font-weight: bold; color: #495057;">Enter payload to store:</label>
-                    <input
-                        type="text"
-                        id="storedPayloadInput"
-                        name="storedPayloadInput"
-                        placeholder="Type XSS payload here..."
-                        style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-size: 16px; box-sizing: border-box;"
-                        required
-                    >
-                </div>
-
-                <button type="submit" class="btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                    📤 Store Payload
-                </button>
-            </form>
-
-            <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #17a2b8;">
-                <h4>📦 Currently Stored Payload (Safe View):</h4>
-                <p id="currentStoredPayloadSafe" style="font-size: 16px; color: #495057; margin: 10px 0;"></p>
-                <p style="color: #6c757d; font-size: 14px; margin: 0;">Always rendered with textContent.</p>
+        <div style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%); border-radius: 10px;">
+            <h3>🔗 DOM XSS Playground (URL Fragment)</h3>
+            <p>Click either URL fragment link. One is intentionally vulnerable and one is safe.</p>
+            <p style="margin-bottom: 16px;">Example payload used below: <code>&lt;img src=x onerror="alert('DOM XSS via fragment')"&gt;</code></p>
+            <div>
+                <a
+                    class="btn"
+                    href="#unsafe=%3Cimg%20src%3Dinvalid-image%20onerror%3D%22alert('DOM%20XSS%20via%20fragment')%22%3E"
+                    style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);"
+                >
+                    ⚠️ Click Vulnerable Fragment
+                </a>
+                <a
+                    class="btn"
+                    href="#safe=%3Cimg%20src%3Dinvalid-image%20onerror%3D%22alert('DOM%20XSS%20via%20fragment')%22%3E"
+                    style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);"
+                >
+                    ✅ Click Safe Fragment
+                </a>
             </div>
 
-            <div style="margin-top: 15px;">
-                <button id="renderUnsafeButton" class="btn" style="border: none; cursor: pointer; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
-                    ⚠️ Render Unsafe (innerHTML)
-                </button>
-                <button id="renderSafeButton" class="btn" style="border: none; cursor: pointer; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
-                    ✅ Render Safe (textContent)
-                </button>
+            <div id="fragmentUnsafeResultBox" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #dc3545; display: none;">
+                <h4>Unsafe Render (innerHTML)</h4>
+                <p id="fragmentUnsafeResult" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
             </div>
 
-            <div id="resultVulnerableToStoredXSS" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #dc3545; display: none;">
-                <h4>🎯 Stored Payload (Unsafe Render):</h4>
-                <p id="userMessageVulnerableToStoredXSS" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
-                <p style="color: #6c757d; font-size: 14px; margin: 0;">Uses innerHTML and is intentionally vulnerable.</p>
-            </div>
-
-            <div id="resultSafeFromStoredXSS" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #007bff; display: none;">
-                <h4>🎯 Stored Payload (Safe Render):</h4>
-                <p id="userMessageSafeFromStoredXSS" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
-                <p style="color: #6c757d; font-size: 14px; margin: 0;">Uses textContent and renders payload as plain text.</p>
+            <div id="fragmentSafeResultBox" style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #007bff; display: none;">
+                <h4>Safe Render (textContent)</h4>
+                <p id="fragmentSafeResult" style="font-size: 18px; color: #495057; margin: 10px 0;"></p>
             </div>
         </div>
         
@@ -177,87 +143,40 @@
         </div>
     </div>
     
-    <!-- JavaScript for form handling -->
+    <!-- JavaScript for DOM XSS fragment demo -->
     <script>
-        const STORED_XSS_KEY = 'storedxss_payload';
-
-        function getStoredPayload() {
-            return localStorage.getItem(STORED_XSS_KEY) || '';
-        }
-
-        function setStoredPayload(payload) {
-            localStorage.setItem(STORED_XSS_KEY, payload);
-        }
-
-        function updateStoredPayloadSafePreview() {
-            const previewElement = document.getElementById('currentStoredPayloadSafe');
-            const storedPayload = getStoredPayload();
-            previewElement.textContent = storedPayload.trim() === '' ? '(No payload stored yet)' : storedPayload;
-        }
-
-        function renderUnsafeStoredPayload() {
-            const storedPayload = getStoredPayload();
-            const resultDiv = document.getElementById('resultVulnerableToStoredXSS');
-            const userMessage = document.getElementById('userMessageVulnerableToStoredXSS');
-
-            if (storedPayload.trim() === '') {
-                resultDiv.style.display = 'none';
-                return;
+        function readPayloadFromFragment(prefix) {
+            const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
+            if (!hash.startsWith(prefix + '=')) {
+                return null;
             }
-
-            // Intentionally vulnerable sink for learning stored XSS.
-            userMessage.innerHTML = storedPayload;
-            resultDiv.style.display = 'block';
-            resultDiv.style.animation = 'fadeIn 0.5s ease-in';
+            const rawValue = hash.slice(prefix.length + 1);
+            return decodeURIComponent(rawValue);
         }
 
-        function renderSafeStoredPayload() {
-            const storedPayload = getStoredPayload();
-            const resultDiv = document.getElementById('resultSafeFromStoredXSS');
-            const userMessage = document.getElementById('userMessageSafeFromStoredXSS');
+        function renderFragmentDemo() {
+            const unsafePayload = readPayloadFromFragment('unsafe');
+            const safePayload = readPayloadFromFragment('safe');
+            const unsafeBox = document.getElementById('fragmentUnsafeResultBox');
+            const safeBox = document.getElementById('fragmentSafeResultBox');
+            const unsafeTarget = document.getElementById('fragmentUnsafeResult');
+            const safeTarget = document.getElementById('fragmentSafeResult');
 
-            if (storedPayload.trim() === '') {
-                resultDiv.style.display = 'none';
-                return;
+            unsafeBox.style.display = 'none';
+            safeBox.style.display = 'none';
+
+            if (unsafePayload !== null) {
+                // Intentionally vulnerable sink for DOM XSS learning.
+                unsafeTarget.innerHTML = unsafePayload;
+                unsafeBox.style.display = 'block';
+            } else if (safePayload !== null) {
+                safeTarget.textContent = safePayload;
+                safeBox.style.display = 'block';
             }
-
-            userMessage.textContent = storedPayload;
-            resultDiv.style.display = 'block';
-            resultDiv.style.animation = 'fadeIn 0.5s ease-in';
         }
-
-        function storePayloadFromInput() {
-            const input = document.getElementById('storedPayloadInput');
-            const userInput = input.value;
-
-            if (userInput.trim() === '') {
-                return false;
-            }
-
-            setStoredPayload(userInput);
-            input.value = '';
-            return true;
-        }
-
-        document.getElementById('storePayloadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const didStore = storePayloadFromInput();
-            if (didStore) {
-                updateStoredPayloadSafePreview();
-                alert('Payload stored in localStorage. Click a render button to display it.');
-            }
-        });
-
-        document.getElementById('renderUnsafeButton').addEventListener('click', function() {
-            renderUnsafeStoredPayload();
-        });
-
-        document.getElementById('renderSafeButton').addEventListener('click', function() {
-            renderSafeStoredPayload();
-        });
-
-        // Show existing stored payload safely on page load.
-        updateStoredPayloadSafePreview();
+        
+        renderFragmentDemo();
+        window.addEventListener('hashchange', renderFragmentDemo);
         
         // Add some CSS animations
         const style = document.createElement('style');
