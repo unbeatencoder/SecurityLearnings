@@ -45,3 +45,16 @@ Click the link/button on `localhost.html` to submit the forged request to:
 - `http://localhost:8000/transfer`
 
 Then check the victim server terminal logs for the transfer result.
+
+## 6) Expected observations with synchronizer token protection
+
+When you trigger the forged request from `localhost.html`, you should observe:
+
+- The request still reaches `POST /transfer` (the browser can submit cross-origin forms).
+- The demo session cookie may still be sent, so the request can look authenticated.
+- The attacker form does **not** include `csrf_token`, so the server rejects it.
+- Response should be `403` with JSON:
+  - `{"status":"error","message":"Forbidden: invalid or missing CSRF token"}`
+- No transfer is processed, so account balance/transfer history should remain unchanged.
+
+For comparison, submitting the form from `index.html` should include the expected token and succeed with `200`, which demonstrates why synchronizer tokens prevent blind cross-site form submissions from changing state.
