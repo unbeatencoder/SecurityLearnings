@@ -1,0 +1,1 @@
+Quick experiments leveraging AI assisted development to learn security attacks and defenses from first principles
