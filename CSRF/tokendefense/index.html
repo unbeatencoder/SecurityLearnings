@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vulnerable CSRF Demo</title>
+  <title>CSRF Token Defense Demo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -31,39 +31,45 @@
   </style>
 </head>
 <body>
-  <h1>CSRF Vulnerable Transfer Page</h1>
+  <h1>CSRF-Protected Transfer Page</h1>
   <p>
-    This page is intentionally insecure for learning. It performs a money transfer
-    using a plain POST form and does not include any CSRF protection.
+    This page demonstrates CSRF token validation with a fixed demo token embedded
+    in the form and checked by the server on transfer.
   </p>
 
   <div class="box">
     <h2>Transfer Funds</h2>
     <p id="cookieStatus"></p>
-    <!-- Vulnerability: No CSRF token; server is assumed to trust session cookies only -->
+    <!-- CSRF defense: hidden token submitted with transfer -->
     <form action="http://localhost:8000/transfer" method="POST">
       <label for="to">Recipient:</label><br />
       <input id="to" name="to" value="attacker_account" /><br /><br />
 
       <label for="amount">Amount:</label><br />
       <input id="amount" name="amount" type="number" value="500" /><br />
+      <input
+        type="hidden"
+        id="csrf_token"
+        name="csrf_token"
+        value="demo-fixed-csrf-token-12345"
+      />
 
       <button type="submit">Transfer Money</button>
     </form>
   </div>
 
   <div class="box">
-    <h3>Why this is vulnerable</h3>
+    <h3>Why this is protected</h3>
     <ul>
-      <li>State-changing action is triggered by a simple form POST.</li>
-      <li>No anti-CSRF token is included or validated.</li>
+      <li>State-changing action includes a CSRF token field.</li>
+      <li>Server validates the submitted token before processing transfer.</li>
       <li>
-        If the victim is logged in, browser cookies are sent automatically with
-        the cross-site request.
+        This fixed-token version is for demonstration only; production systems
+        should use per-session or per-request unpredictable tokens.
       </li>
     </ul>
     <p>
-      Typical defenses: CSRF tokens, <code>SameSite</code> cookies, and Origin/Referer checks.
+      Typical defenses include CSRF tokens, <code>SameSite</code> cookies, and Origin/Referer checks.
     </p>
   </div>
   <script>

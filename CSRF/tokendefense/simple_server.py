@@ -9,6 +9,7 @@ import socketserver
 import os
 import sys
 import json
+from http.cookies import SimpleCookie
 from urllib.parse import parse_qs
 
 # In-memory state for demo transfers.
@@ -17,6 +18,9 @@ DEMO_ACCOUNT = {
     "balance": 5000.0,
     "transfers": [],
 }
+
+# Fixed demo token for simplified CSRF validation.
+DEMO_CSRF_TOKEN = "demo-fixed-csrf-token-12345"
 
 class SimpleHTTPServer(http.server.SimpleHTTPRequestHandler):
     """Custom HTTP request handler with enhanced logging."""
@@ -47,6 +51,19 @@ class SimpleHTTPServer(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(response_body)))
         self.end_headers()
         self.wfile.write(response_body)
+
+    def _get_session_id(self):
+        """Extract demo session ID from Cookie header."""
+        cookie_header = self.headers.get("Cookie", "")
+        if not cookie_header:
+            return ""
+
+        parsed_cookies = SimpleCookie()
+        parsed_cookies.load(cookie_header)
+        morsel = parsed_cookies.get("session")
+        if morsel is None:
+            return ""
+        return morsel.value
 
     def do_POST(self):
         """Handle POST requests for vulnerable transfer API."""
@@ -79,16 +96,25 @@ class SimpleHTTPServer(http.server.SimpleHTTPRequestHandler):
             self._send_json(400, {"status": "error", "message": "Insufficient funds"})
             return
 
-        # Intentionally vulnerable demo auth model:
-        # server trusts session cookie for state-changing requests and performs
-        # no CSRF token / Origin / Referer validation.
-        cookie_header = self.headers.get("Cookie", "")
-        if "session=victim123" not in cookie_header:
+        session_id = self._get_session_id()
+        if session_id != "victim123":
             self._send_json(
                 401,
                 {
                     "status": "error",
                     "message": "Unauthorized: missing demo session cookie",
+                },
+            )
+            return
+
+        submitted_csrf_token = form_data.get("csrf_token", [""])[0].strip()
+        expected_csrf_token = DEMO_CSRF_TOKEN
+        if not submitted_csrf_token or submitted_csrf_token != expected_csrf_token:
+            self._send_json(
+                403,
+                {
+                    "status": "error",
+                    "message": "Forbidden: invalid or missing CSRF token",
                 },
             )
             return
