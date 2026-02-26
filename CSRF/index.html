@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vulnerable CSRF Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+    .box {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      background: #fafafa;
+    }
+    code {
+      background: #f0f0f0;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 0.8rem;
+      padding: 0.5rem 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>CSRF Vulnerable Transfer Page</h1>
+  <p>
+    This page is intentionally insecure for learning. It performs a money transfer
+    using a plain POST form and does not include any CSRF protection.
+  </p>
+
+  <div class="box">
+    <h2>Transfer Funds</h2>
+    <p id="cookieStatus"></p>
+    <!-- Vulnerability: No CSRF token; server is assumed to trust session cookies only -->
+    <form action="http://localhost:8000/transfer" method="POST">
+      <label for="to">Recipient:</label><br />
+      <input id="to" name="to" value="attacker_account" /><br /><br />
+
+      <label for="amount">Amount:</label><br />
+      <input id="amount" name="amount" type="number" value="500" /><br />
+
+      <button type="submit">Transfer Money</button>
+    </form>
+  </div>
+
+  <div class="box">
+    <h3>Why this is vulnerable</h3>
+    <ul>
+      <li>State-changing action is triggered by a simple form POST.</li>
+      <li>No anti-CSRF token is included or validated.</li>
+      <li>
+        If the victim is logged in, browser cookies are sent automatically with
+        the cross-site request.
+      </li>
+    </ul>
+    <p>
+      Typical defenses: CSRF tokens, <code>SameSite</code> cookies, and Origin/Referer checks.
+    </p>
+  </div>
+  <script>
+    const cookieStatus = document.getElementById("cookieStatus");
+    cookieStatus.textContent =
+      "Session cookie is issued by server response headers (Set-Cookie).";
+  </script>
+</body>
+</html>
